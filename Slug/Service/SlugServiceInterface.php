@@ -10,37 +10,37 @@ interface SlugServiceInterface
     /**
      * Get the classe name
      *
-     * @return string
+     * @return array|string
      */
-    public function getClass();
+    public function getClass(): array|string;
 
     /**
      * Get the service name
      *
-     * @return
+     * @return string
      */
-    public function getName();
+    public function getName(): string;
 
     /**
      * Set service name
      *
      * @param string $name
      */
-    public function setName($name);
+    public function setName(string $name);
 
     /**
      * Get the service alias
      *
      * @return string
      */
-    public function getAlias();
+    public function getAlias(): string;
 
     /**
      * Set the service alias
      *
      * @param string $alias
      */
-    public function setAlias($alias);
+    public function setAlias(string $alias);
 
     /**
      * Get the entity linked to the slug
@@ -56,17 +56,18 @@ interface SlugServiceInterface
      * @param $entity
      * @param bool $create
      * @param bool $optional
-     * @return SlugInterface|false
+     * @return SlugInterface|null
      */
-    public function findSlug($entity, $create = false, $optional = false);
+    public function findSlug($entity, $create = false, $optional = false): ?SlugInterface;
 
     /**
      * Create a Slug linked to the entity
      *
      * @param mixed $entity
+     * @param bool $save save the slug
      * @return SlugInterface
      */
-    public function createSlug($entity);
+    public function createSlug($entity, bool $save = true): SlugInterface;
 
     /**
      * Update the link with the linked entity
@@ -74,7 +75,7 @@ interface SlugServiceInterface
      * @param mixed $entity
      * @return SlugInterface the updated Slug
      */
-    public function updateSlug($entity);
+    public function updateSlug($entity): SlugInterface;
 
     /**
      * Create a new slug linked to the updated entity
@@ -83,7 +84,7 @@ interface SlugServiceInterface
      * @param SlugInterface $oldSlug
      * @return SlugInterface the new slug
      */
-    public function incrementSlug($entity, SlugInterface $oldSlug);
+    public function incrementSlug($entity, SlugInterface $oldSlug): SlugInterface;
 
     /**
      * Set the slug of the entity
@@ -99,7 +100,7 @@ interface SlugServiceInterface
      * @param mixed $entity
      * @return string
      */
-    public function getEntitySlug($entity);
+    public function getEntitySlug($entity): string;
 
     /**
      * Initialize slug values
@@ -116,7 +117,7 @@ interface SlugServiceInterface
      * @param $entity
      * @return bool
      */
-    public function hasChanged($entity);
+    public function hasChanged($entity): bool;
 
     /**
      * Returns the entity id
@@ -127,13 +128,21 @@ interface SlugServiceInterface
     public function getEntityId($entity);
 
     /**
-     * Validates the entity. Use it before building the slug.
+     * Validate slug before saving it.
      *
-     * @param $value
+     * @param SlugInterface $slug
      *
      * @return ConstraintViolationListInterface A list of constraint violations
      *                                          If the list is empty, validation
      *                                          succeeded
      */
-    public function validate($value);
+    public function validate($value): ?ConstraintViolationListInterface;
+
+    /**
+     * Save a slug into db
+     *
+     * @param SlugInterface $slug
+     * @return void
+     */
+    public function saveSlug(SlugInterface $slug): void;
 }

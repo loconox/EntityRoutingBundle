@@ -6,17 +6,17 @@ use Loconox\EntityRoutingBundle\Entity\Slug;
 use Loconox\EntityRoutingBundle\Generator\UrlGenerator;
 use Loconox\EntityRoutingBundle\Slug\Service\SlugServiceInterface;
 use Loconox\EntityRoutingBundle\Slug\SlugServiceManager;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\Exception\InvalidParameterException;
 use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 
-class UrlGeneratorTest extends \PHPUnit_Framework_TestCase
+class UrlGeneratorTest extends TestCase
 {
     /**
      * @param $name
@@ -29,24 +29,26 @@ class UrlGeneratorTest extends \PHPUnit_Framework_TestCase
     public function testGenerate($name, $parameters, $routes, $slugData, $expected)
     {
         $routeCollection = new RouteCollection();
-        $context         = $this->getMockBuilder(RequestContext::class)
-                                ->getMock();
+        $context = $this->getMockBuilder(RequestContext::class)
+            ->getMock();
+
         $context->expects($this->any())
-                ->method('getHost')
-                ->willReturn(null);
+            ->method('getHost')
+            ->willReturn('');
+
         $context->expects($this->any())
-                ->method('getParameters')
-                ->willReturn([]);
+            ->method('getParameters')
+            ->willReturn([]);
 
         // Init slugs
         $slugServiceManager = $this->getMockBuilder(SlugServiceManager::class)
-                                   ->getMock();
+            ->getMock();
 
         $slugServices = [];
         foreach ($slugData as $type => $slugs) {
             // Slug service
             $slugService = $this->getMockBuilder(SlugServiceInterface::class)
-                                ->getMock();
+                ->getMock();
 
             $slugServices[] = [$type, $slugService];
             foreach ($slugs as $id => $slugValue) {
@@ -54,18 +56,18 @@ class UrlGeneratorTest extends \PHPUnit_Framework_TestCase
                 $slug->setType($type);
                 $slug->setSlug($slugValue);
                 $slugService->expects($this->any())
-                            ->method('findSlug')
-                            ->with($this->equalTo($id))
-                            ->willReturn($slug);
+                    ->method('findSlug')
+                    ->with($this->equalTo($id))
+                    ->willReturn($slug);
                 $slugService->expects($this->any())
-                            ->method('validate')
-                            ->with($this->equalTo($id))
-                            ->willReturn(new RouteCollection());
+                    ->method('validate')
+                    ->with($this->equalTo($id))
+                    ->willReturn(new ConstraintViolationList());
             }
         }
         $slugServiceManager->expects($this->any())
-                           ->method('get')
-                           ->willReturnMap($slugServices);
+            ->method('get')
+            ->willReturnMap($slugServices);
 
         $generator = new UrlGenerator($routeCollection, $context, null, $slugServiceManager);
 
@@ -156,37 +158,37 @@ class UrlGeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateMissingParameters()
     {
-        $type      = 'bar';
-        $id        = 42;
+        $type = 'bar';
+        $id = 42;
         $slugValue = 'toto';
         $routeName = 'foo';
-        $route     = new Route('/{bar}');
+        $route = new Route('/{bar}');
 
         $routeCollection = new RouteCollection();
-        $context         = $this->getMockBuilder(RequestContext::class)
-                                ->getMock();
+        $context = $this->getMockBuilder(RequestContext::class)
+            ->getMock();
         $context->expects($this->any())
-                ->method('getHost')
-                ->willReturn(null);
+            ->method('getHost')
+            ->willReturn('');
         $context->expects($this->any())
-                ->method('getParameters')
-                ->willReturn([]);
+            ->method('getParameters')
+            ->willReturn([]);
 
         // Init slugs
         $slugServiceManager = $this->getMockBuilder(SlugServiceManager::class)
-                                   ->getMock();
+            ->getMock();
 
         $slugService = $this->getMockBuilder(SlugServiceInterface::class)
-                            ->getMock();
-        $slug        = new Slug();
+            ->getMock();
+        $slug = new Slug();
         $slug->setType($type);
         $slug->setSlug($slugValue);
         $slugService->expects($this->never())
-                    ->method('findSlug');
+            ->method('findSlug');
 
 
         $slugServiceManager->expects($this->never())
-                           ->method('get');
+            ->method('get');
 
         $generator = new UrlGenerator($routeCollection, $context, null, $slugServiceManager);
 
@@ -198,36 +200,36 @@ class UrlGeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateRouteNotFound()
     {
-        $type      = 'bar';
-        $id        = 42;
+        $type = 'bar';
+        $id = 42;
         $slugValue = 'toto';
         $routeName = 'baz';
-        $route     = new Route('/{bar}');
+        $route = new Route('/{bar}');
 
         $routeCollection = new RouteCollection();
-        $context         = $this->getMockBuilder(RequestContext::class)
-                                ->getMock();
+        $context = $this->getMockBuilder(RequestContext::class)
+            ->getMock();
         $context->expects($this->any())
-                ->method('getHost')
-                ->willReturn(null);
+            ->method('getHost')
+            ->willReturn('');
         $context->expects($this->any())
-                ->method('getParameters')
-                ->willReturn([]);
+            ->method('getParameters')
+            ->willReturn([]);
 
         // Init slugs
         $slugServiceManager = $this->getMockBuilder(SlugServiceManager::class)
-                                   ->getMock();
+            ->getMock();
 
         $slugService = $this->getMockBuilder(SlugServiceInterface::class)
-                            ->getMock();
-        $slug        = new Slug();
+            ->getMock();
+        $slug = new Slug();
         $slug->setType($type);
         $slug->setSlug($slugValue);
         $slugService->expects($this->never())
-                    ->method('findSlug');
+            ->method('findSlug');
 
         $slugServiceManager->expects($this->never())
-                           ->method('get');
+            ->method('get');
 
         $generator = new UrlGenerator($routeCollection, $context, null, $slugServiceManager);
 
@@ -239,96 +241,98 @@ class UrlGeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateWithObject()
     {
-        $type      = 'bar';
-        $entity    = new \stdClass();
+        $type = 'bar';
+        $entity = new \stdClass();
         $slugValue = 'toto';
         $routeName = 'foo';
-        $route     = new Route('/{bar}');
+        $route = new Route('/{bar}');
 
         $routeCollection = new RouteCollection();
-        $context         = $this->getMockBuilder(RequestContext::class)
-                                ->getMock();
+        $context = $this->getMockBuilder(RequestContext::class)
+            ->getMock();
         $context->expects($this->any())
-                ->method('getHost')
-                ->willReturn(null);
+            ->method('getHost')
+            ->willReturn('');
         $context->expects($this->any())
-                ->method('getParameters')
-                ->willReturn([]);
+            ->method('getParameters')
+            ->willReturn([]);
 
         // Init slugs
         $slugServiceManager = $this->getMockBuilder(SlugServiceManager::class)
-                                   ->getMock();
+            ->getMock();
 
         $slugService = $this->getMockBuilder(SlugServiceInterface::class)
-                            ->getMock();
-        $slug        = new Slug();
+            ->getMock();
+        $slug = new Slug();
         $slug->setType($type);
         $slug->setSlug($slugValue);
         $slugService->expects($this->atLeastOnce())
-                    ->method('findSlug')
-                    ->with($this->equalTo($entity))
-                    ->willReturn($slug);
-        $slugService->expects($this->atLeastOnce())
-                    ->method('validate')
-                    ->with($this->equalTo($entity))
-                    ->willReturn(new RouteCollection());
+            ->method('findSlug')
+            ->with($this->equalTo($entity))
+            ->willReturn($slug);
+        $slugService->expects($this->never())
+            ->method('validate')
+            ->with($this->equalTo($entity))
+            ->willReturn(new ConstraintViolationList());
 
 
         $slugServiceManager->expects($this->any())
-                           ->method('get')
-                           ->with($this->equalTo($type))
-                           ->willReturn($slugService);
+            ->method('get')
+            ->with($this->equalTo($type))
+            ->willReturn($slugService);
 
         $generator = new UrlGenerator($routeCollection, $context, null, $slugServiceManager);
 
         $routeCollection->add($routeName, $route);
 
-        $this->assertEquals('/'.$slugValue, $generator->generate($routeName, ['bar' => $entity]));
+        $this->assertEquals('/' . $slugValue, $generator->generate($routeName, ['bar' => $entity]));
     }
 
     public function testGenerateWithWrongParameterType()
     {
-        $type      = 'bar';
-        $entity    = new \stdClass();
+        $type = 'bar';
+        $entity = new \stdClass();
         $slugValue = 'toto';
         $routeName = 'foo';
-        $route     = new Route('/{bar}');
+        $route = new Route('/{bar}');
 
         $routeCollection = new RouteCollection();
-        $context         = $this->getMockBuilder(RequestContext::class)
-                                ->getMock();
+        $context = $this->getMockBuilder(RequestContext::class)
+            ->getMock();
         $context->expects($this->any())
-                ->method('getHost')
-                ->willReturn(null);
+            ->method('getHost')
+            ->willReturn('');
         $context->expects($this->any())
-                ->method('getParameters')
-                ->willReturn([]);
+            ->method('getParameters')
+            ->willReturn([]);
 
         // Init slugs
         $slugServiceManager = $this->getMockBuilder(SlugServiceManager::class)
-                                   ->getMock();
+            ->getMock();
 
         $constraint = $this->getMockBuilder(ConstraintViolationInterface::class)
             ->getMock();
-        $violationList = new ConstraintViolationList();
-        $violationList->add($constraint);
+
         $slugService = $this->getMockBuilder(SlugServiceInterface::class)
-                            ->getMock();
-        $slug        = new Slug();
+            ->getMock();
+        $slug = new Slug();
         $slug->setType($type);
         $slug->setSlug($slugValue);
-        $slugService->expects($this->never())
-                    ->method('findSlug');
-        $slugService->expects($this->atLeastOnce())
-                    ->method('validate')
-                    ->with($this->equalTo($entity))
-                    ->willReturn($violationList);
 
+        $slugService
+            ->expects($this->atLeastOnce())
+            ->method('findSlug')
+            ->with($this->equalTo($entity))
+            ->willReturn(null);
+
+        $slugService
+            ->expects($this->never())
+            ->method('validate');
 
         $slugServiceManager->expects($this->any())
-                           ->method('get')
-                           ->with($this->equalTo($type))
-                           ->willReturn($slugService);
+            ->method('get')
+            ->with($this->equalTo($type))
+            ->willReturn($slugService);
 
         $generator = new UrlGenerator($routeCollection, $context, null, $slugServiceManager);
 

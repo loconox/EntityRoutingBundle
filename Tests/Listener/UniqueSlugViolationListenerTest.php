@@ -5,8 +5,9 @@ namespace Loconox\EntityRoutingBundle\Tests\Listener;
 use Loconox\EntityRoutingBundle\Event\SlugEvent;
 use Loconox\EntityRoutingBundle\Listener\UniqueSlugViolationListener;
 use Loconox\EntityRoutingBundle\Entity\Slug;
+use PHPUnit\Framework\TestCase;
 
-class UniqueSlugViolationListenerTest extends \PHPUnit_Framework_TestCase
+class UniqueSlugViolationListenerTest extends TestCase
 {
     public function testUniqueSlugVioation()
     {

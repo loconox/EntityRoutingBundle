@@ -1,6 +1,6 @@
 services:
     loconox_entity_routing.twig.extension.slug:
         class: Loconox\EntityRoutingBundle\Twig\SlugExtension
-        arguments: [ "@loconox_entity_routing.slug.service.manager" ]
+        arguments: [ '@Loconox\EntityRoutingBundle\Slug\SlugServiceManager' ]
         tags:
             - { name: twig.extension }

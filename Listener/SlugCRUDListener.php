@@ -2,23 +2,24 @@
 
 namespace Loconox\EntityRoutingBundle\Listener;
 
-use Loconox\EntityRoutingBundle\Entity\RouteManager;
 use Loconox\EntityRoutingBundle\Event\SlugEvent;
 use Loconox\EntityRoutingBundle\Events;
 use Loconox\EntityRoutingBundle\Slug\SlugServiceManagerInterface;
+use Loconox\EntityRoutingBundle\Validator\Constraints\UniqueSlug;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SlugCRUDListener implements EventSubscriberInterface
 {
 
-    /**
-     * @var SlugServiceManagerInterface
-     */
-    protected $serviceManager;
+    protected SlugServiceManagerInterface $serviceManager;
 
-    function __construct(SlugServiceManagerInterface $serviceManager)
+    protected EventDispatcherInterface $eventDispatcher;
+
+    function __construct(SlugServiceManagerInterface $serviceManager, EventDispatcherInterface $eventDispatcher)
     {
         $this->serviceManager = $serviceManager;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -35,7 +36,15 @@ class SlugCRUDListener implements EventSubscriberInterface
             throw new \Exception(sprintf('No service found for the class %s', get_class($entity)));
         }
 
-        $service->createSlug($entity);
+        $violations = $service->validate($entity);
+        if ($violations->count() > 0 && $violations->get(0)->getConstraint() instanceof UniqueSlug) {
+            $this->eventDispatcher->dispatch($event, Events::UNIQUE_SLUG_VIOLATION);
+        }
+
+        if (!$event->getSlug()) {
+            $service->createSlug($entity);
+        }
+
     }
 
     /**

@@ -1,11 +1,11 @@
 services:
     loconox_entity_routing.listener.slug_crud_listener:
         class: Loconox\EntityRoutingBundle\Listener\SlugCRUDListener
-        arguments: [ "@loconox_entity_routing.slug.service.manager"]
+        arguments: [ '@Loconox\EntityRoutingBundle\Slug\SlugServiceManager', "@event_dispatcher" ]
         tags:
             - { name: kernel.event_subscriber }
     loconox_entity_routing.listener.unique_slug_violation_listener:
         class: Loconox\EntityRoutingBundle\Listener\UniqueSlugViolationListener
-        arguments: [ "@loconox_entity_routing.manager.slug", "@loconox_entity_routing.slug.service.manager" ]
+        arguments: [ "@loconox_entity_routing.manager.slug", '@Loconox\EntityRoutingBundle\Slug\SlugServiceManager' ]
         tags:
             - { name: kernel.event_subscriber }

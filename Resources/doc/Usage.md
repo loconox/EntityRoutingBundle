@@ -1,12 +1,19 @@
 Usage
 =====
 
+# Configuration
+
 Assuming you have a `Product` class:
 
 ```php
+#[ORM\Entity]
 class Product
 {
-    private $name;
+    #[ORM\Column(length: 255)]
+    private string $name;
+    
+    #[ORM\Column(length: 255)]
+    private string $slug;
     // ...
 }
 ```
@@ -17,12 +24,11 @@ Within you `ProductController`, create a route with the new annotation class `Lo
 use Loconox\EntityRoutingBundle\Annotation\Route;
 // ...
 
-class ProductController extends Controller
+class ProductController extends AbstractController
 {
-    /**
-     * @Route("/{product}", name="product")
-     */
-    public function productAction($product)
+
+    #[Route('/{product}', name: 'product')]
+    public function product($product)
     {
         // ...
     }
@@ -34,10 +40,10 @@ Create a `ProductSlugService` class and implement the different functions corres
 ```php
 <?php
 
-namespace AppBundle\Slug\Service;
+namespace App\Slug\Service;
 
 
-use AppBundle\Entity\Product;
+use App\Entity\Product;
 use Doctrine\ORM\EntityManager;
 use Loconox\EntityRoutingBundle\Model\SlugInterface;
 use Loconox\EntityRoutingBundle\Slug\Service\BaseSlugService;
@@ -64,12 +70,12 @@ class ProductSlugService extends BaseSlugService
     /**
      * Set the slug of the entity
      *
-     * @param Product $entity
+     * @param Product $product
      * @param SlugInterface $slug
      */
-    public function setEntitySlug(SlugInterface $slug, $entity)
+    public function setEntitySlug(SlugInterface $slug, $product): void
     {
-        $entity->setName($slug->getSlug());
+        $product->setSlug($slug->getSlug());
     }
 
     /**
@@ -79,9 +85,14 @@ class ProductSlugService extends BaseSlugService
      *
      * @return string
      */
-    public function getEntitySlug($entity)
+    public function getEntitySlug($product): string
     {
-        return $this->slugify($entity->getName());
+        if (!$product->getSlug()) {
+            $slug = $this->slugify($product->getName());
+            $product->setSlug($slug);
+        }
+
+        return $product->getSlug();
     }
 
     /**
@@ -91,9 +102,12 @@ class ProductSlugService extends BaseSlugService
      *
      * @return bool
      */
-    public function hasChanged($entity)
+    public function hasChanged($entity): bool
     {
         $slug = $this->findSlug($entity);
+        if (!$slug) {
+            return false;
+        }
         $oldSlug = $slug->getSlug();
         $newSlug = $this->getEntitySlug($entity);
 
@@ -115,7 +129,7 @@ class ProductSlugService extends BaseSlugService
     /**
      * @param EntityManager $em
      */
-    public function setEntityManager(EntityManager $em)
+    public function setEntityManager(EntityManager $em): void
     {
         $this->em = $em;
     }
@@ -125,12 +139,104 @@ class ProductSlugService extends BaseSlugService
 Declare the service:
 
 ```yaml
+# config/services.yaml
     App\Slug\Service\ProductSlugService:
         arguments:
-            - "AppBundle\\Entity\\Product"
+            - App\Entity\Product
             - "@loconox_entity_routing.manager.slug"
         calls:
             - [ setEntityManager, [ "@loconox_entity_routing.entity_manager" ]]
         tags:
             - { name: loconox_entity_routing.slug.service, alias: product }
+```
+
+Note that the alias is used to match the entity class in routes.
+
+# Twig
+
+There is a twig function `slug` to get slug form entity
+
+```html
+{{ slug(product) }}
+```
+
+Generate route :
+
+```html
+<a href="{{ path('product', {'product': product}) }}">{{ product.name }}</a>
+```
+
+# Slug creation
+
+To trigger the creation of a slug, you can do it manually.
+
+```php
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Product;
+use Doctrine\Persistence\ManagerRegistry;
+use Loconox\EntityRoutingBundle\Slug\SlugServiceManager;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class ProductController extends AbstractController
+{
+    #[Route('/product/new/{name}', name: 'newProduct')]
+    public function new(ManagerRegistry $doctrine, SlugServiceManager $slugServiceManager, $name)
+    {
+        $product = new Product();
+        $product->setName($name);
+
+        $entityManager = $doctrine->getManager();
+        $entityManager->persist($product);
+
+        $service = $slugServiceManager->get(Product::class);
+        $service->createSlug($product);
+
+        $entityManager->flush();
+        // ...
+    }
+}
+```
+
+Or by using the `Events::ACTION_CREATE_SLUG` event. This way, it automatically handles slug collisions.
+
+```php
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Product;
+use Doctrine\Persistence\ManagerRegistry;
+use Loconox\EntityRoutingBundle\Event\SlugEvent;
+use Loconox\EntityRoutingBundle\Events;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class ProductController extends AbstractController
+{
+
+    #[Route('/product/new/{name}', name: 'newProduct')]
+    public function new(ManagerRegistry $doctrine, EventDispatcherInterface $dispatcher, $name)
+    {
+        // ...
+        $product = new Product();
+        $product->setName($name);
+
+        $entityManager = $doctrine->getManager();
+        $entityManager->persist($product);
+
+        $event = new SlugEvent($product);
+        $dispatcher->dispatch($event, Events::ACTION_CREATE_SLUG);
+
+        $entityManager->flush();
+        
+        // ...
+    }
+}
 ```

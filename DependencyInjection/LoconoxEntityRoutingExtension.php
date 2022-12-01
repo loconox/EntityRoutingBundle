@@ -30,7 +30,7 @@ class LoconoxEntityRoutingExtension extends Extension
         $loader->load('admin.yaml');
         $loader->load('validator.yaml');
         $loader->load('orm.yaml');
-        //$loader->load('twig.yml');
+        $loader->load('twig.yaml');
 
 
         $container->setParameter('loconox_entity_routing.entity_manager', $config['entity_manager']);

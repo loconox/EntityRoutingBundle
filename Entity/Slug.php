@@ -8,8 +8,8 @@ use Loconox\EntityRoutingBundle\Model\Slug as BaseSlug;
 /**
  * Class BaseSlug
  *
- * @UniqueEntity(fields={"slug", "type"}, ignoreNull=false)
  */
+#[UniqueEntity(fields: ["slug", "type"], ignoreNull: false)]
 class Slug extends BaseSlug
 {
     /**

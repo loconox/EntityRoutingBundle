@@ -23,7 +23,7 @@ class SlugAdminExtension extends AdminExtension
     public function postPersist(AdminInterface $admin, $entity)
     {
         $event = new SlugEvent($entity);
-        $this->dispatcher->dispatch(Events::ACTION_CREATE_SLUG, $event);
+        $this->dispatcher->dispatch($event, Events::ACTION_CREATE_SLUG);
     }
 
     /**
@@ -32,7 +32,7 @@ class SlugAdminExtension extends AdminExtension
     public function preUpdate(AdminInterface $admin, $entity)
     {
         $event = new SlugEvent($entity);
-        $this->dispatcher->dispatch(Events::ACTION_UPDATE_SLUG, $event);
+        $this->dispatcher->dispatch($event, Events::ACTION_UPDATE_SLUG, );
     }
 
     /**

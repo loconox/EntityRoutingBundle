@@ -2,7 +2,9 @@
 
 namespace Loconox\EntityRoutingBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+
+use Loconox\EntityRoutingBundle\Model\SlugInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class SlugEvent extends Event
 {
@@ -12,9 +14,12 @@ class SlugEvent extends Event
      */
     protected $entity;
 
+    protected SlugInterface|null $slug;
+
     public function __construct($entity)
     {
         $this->entity = $entity;
+        $this->slug = null;
     }
 
     /**
@@ -25,5 +30,21 @@ class SlugEvent extends Event
     public function getEntity()
     {
         return $this->entity;
+    }
+
+    /**
+     * @return SlugInterface|null
+     */
+    public function getSlug(): ?SlugInterface
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param SlugInterface|null $slug
+     */
+    public function setSlug(?SlugInterface $slug): void
+    {
+        $this->slug = $slug;
     }
 }

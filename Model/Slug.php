@@ -39,10 +39,10 @@ abstract class Slug implements SlugInterface
      */
     protected $createdAt;
 
-	/**
-	 * @var \DateTime
-	 */
-	protected $updatedAt;
+    /**
+     * @var \DateTime
+     */
+    protected $updatedAt;
 
     /**
      * {@inheritdoc}
@@ -177,19 +177,19 @@ abstract class Slug implements SlugInterface
         return $this->getNew() != null;
     }
 
-	/**
-	 * @return \DateTime
-	 */
-	public function getUpdatedAt()
-	{
-		return $this->updatedAt;
-	}
+    /**
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
 
-	/**
-	 * @param \DateTime $updatedAt
-	 */
-	public function setUpdatedAt($updatedAt)
-	{
-		$this->updatedAt = $updatedAt;
-	}
+    /**
+     * @param \DateTime $updatedAt
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+    }
 }

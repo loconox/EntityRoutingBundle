@@ -5,7 +5,10 @@ namespace Loconox\EntityRoutingBundle\Slug\Service;
 
 use Loconox\EntityRoutingBundle\Entity\SlugManager;
 use Loconox\EntityRoutingBundle\Model\SlugInterface;
+use Loconox\EntityRoutingBundle\Validator\Constraints\UniqueSlug;
+use Loconox\EntityRoutingBundle\Validator\Constraints\UniqueSlugValidator;
 use Symfony\Component\Validator\Constraints\Type;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -41,18 +44,18 @@ abstract class BaseSlugService implements SlugServiceInterface
      */
     protected $validator;
 
-    public function __construct($class, SlugManager $slugManager)
+    public function __construct($class, SlugManager $slugManager, ValidatorInterface $validator)
     {
-        $this->class       = $class;
+        $this->class = $class;
         $this->slugManager = $slugManager;
-        $this->cache       = [];
-        $this->validator   = Validation::createValidator();
+        $this->cache = [];
+        $this->validator = $validator;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getClass()
+    public function getClass(): array|string
     {
         return $this->class;
     }
@@ -60,7 +63,7 @@ abstract class BaseSlugService implements SlugServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -68,7 +71,7 @@ abstract class BaseSlugService implements SlugServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
     }
@@ -76,7 +79,7 @@ abstract class BaseSlugService implements SlugServiceInterface
     /**
      * @return string
      */
-    public function getAlias()
+    public function getAlias(): string
     {
         return $this->alias;
     }
@@ -84,7 +87,7 @@ abstract class BaseSlugService implements SlugServiceInterface
     /**
      * @param string $alias
      */
-    public function setAlias($alias)
+    public function setAlias(string $alias)
     {
         $this->alias = $alias;
     }
@@ -92,7 +95,7 @@ abstract class BaseSlugService implements SlugServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function incrementSlug($entity, SlugInterface $oldSlug)
+    public function incrementSlug($entity, SlugInterface $oldSlug): SlugInterface
     {
         $newSlug = $this->createSlug($entity);
         $newSlug->setOld($oldSlug);
@@ -105,7 +108,7 @@ abstract class BaseSlugService implements SlugServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function createSlug($entity, $save = true)
+    public function createSlug($entity, bool $save = true): SlugInterface
     {
         $slug = $this->slugManager->create();
         $this->setValues($slug, $entity);
@@ -119,7 +122,7 @@ abstract class BaseSlugService implements SlugServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function updateSlug($entity)
+    public function updateSlug($entity): SlugInterface
     {
         $slug = $this->findSlug($entity);
 
@@ -138,17 +141,17 @@ abstract class BaseSlugService implements SlugServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function findSlug($entity, $create = false, $optional = false)
+    public function findSlug($entity, $create = false, $optional = false): ?SlugInterface
     {
         $id = $this->getEntityId($entity);
-        if ( ! isset($this->cache[$id])) {
+        if (!isset($this->cache[$id])) {
             $slug = $this->slugManager->findLastBy(
                 [
-                    'type'     => $this->alias,
+                    'type' => $this->alias,
                     'entityId' => $this->getEntityId($entity),
                 ]
             );
-            if ( ! $slug && $create) {
+            if (!$slug && $create) {
                 $slug = $this->createSlug($entity);
             }
             $this->cache[$id] = $slug;
@@ -165,19 +168,30 @@ abstract class BaseSlugService implements SlugServiceInterface
         $slug->setEntityId($this->getEntityId($entity));
     }
 
-    public function validate($value)
+    public function validate($value): ConstraintViolationListInterface
     {
-        return $this->validator->validate($value, $this->constraints());
+         return $this->validator->validate($value, $this->constraints());
+    }
+
+    public function saveSlug(SlugInterface $slug): void
+    {
+        $this->slugManager->save($slug);
     }
 
     protected function constraints()
     {
         return [
-            new Type($this->getClass()),
+            new UniqueSlug(),
         ];
     }
 
-    protected function slugify($text)
+    /**
+     * Transform a string in slug, compatible with url
+     *
+     * @param $text
+     * @return string
+     */
+    protected function slugify($text): string
     {
         $text = trim($text);
         // this code is for BC
@@ -192,9 +206,8 @@ abstract class BaseSlugService implements SlugServiceInterface
         $text = transliterator_transliterate("Latin-ASCII", $text);
         // lowercase
         $text = strtolower($text);
-        // remove unwanted characters
-        $text = preg_replace('~[^-\w]+~', '', $text);
 
-        return $text;
+        // remove unwanted characters
+        return preg_replace('~[^-\w]+~', '', $text);
     }
 }

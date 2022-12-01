@@ -1,5 +1,5 @@
 services:
-    loconox_entity_routing.slug.service.manager:
+    Loconox\EntityRoutingBundle\Slug\SlugServiceManager:
         class: Loconox\EntityRoutingBundle\Slug\SlugServiceManager
         tags:
             - { name: loconox_entity_routing.slug.service.manager }
