@@ -17,9 +17,9 @@
         "symfony/framework-bundle": "^6.2",
         "symfony-cmf/routing-bundle": "^3.0",
         "sensio/framework-extra-bundle": "^6.2",
-        "doctrine/orm": "~2.13",
+        "doctrine/orm": "^2.13",
         "ext-intl": "*",
-        "symfony/validator": "6.3.x-dev"
+        "symfony/validator": "^6.2"
     },
     "suggest": {
         "sonata-project/admin-bundle": "Admin for slugs and routes"
