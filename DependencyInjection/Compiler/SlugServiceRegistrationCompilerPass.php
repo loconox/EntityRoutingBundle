@@ -2,6 +2,7 @@
 
 namespace Loconox\EntityRoutingBundle\DependencyInjection\Compiler;
 
+use Loconox\EntityRoutingBundle\Slug\SlugServiceManager;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -11,7 +12,7 @@ class SlugServiceRegistrationCompilerPass implements CompilerPassInterface
 
     public function process(ContainerBuilder $container)
     {
-        $definition = $container->getDefinition('loconox_entity_routing.slug.service.manager');
+        $definition = $container->getDefinition(SlugServiceManager::class);
 
         $slugServices = $container->findTaggedServiceIds('loconox_entity_routing.slug.service');
         foreach ($slugServices as $id => $tags) {

@@ -22,8 +22,9 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouterInterface;
 
-class SlugRouter implements RequestMatcherInterface, VersatileGeneratorInterface
+class SlugRouter implements RequestMatcherInterface, VersatileGeneratorInterface, RouterInterface
 {
 
     /**
@@ -85,10 +86,10 @@ class SlugRouter implements RequestMatcherInterface, VersatileGeneratorInterface
      */
     public function __construct(
         SlugServiceManager $slugServiceManager,
-        SlugManager $slugManager,
-        $resource,
-        $type,
-        LoaderInterface $loader
+        SlugManager        $slugManager,
+                           $resource,
+                           $type,
+        LoaderInterface    $loader
     )
     {
         $this->slugServiceManager = $slugServiceManager;
@@ -114,7 +115,7 @@ class SlugRouter implements RequestMatcherInterface, VersatileGeneratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getContext()
+    public function getContext(): RequestContext
     {
         return $this->context;
     }
@@ -150,7 +151,7 @@ class SlugRouter implements RequestMatcherInterface, VersatileGeneratorInterface
     /**
      * {@inheritdoc}
      */
-    public function generate($name, $parameters = array(), $referenceType = self::ABSOLUTE_PATH)
+    public function generate(string $name, array $parameters = [], int $referenceType = self::ABSOLUTE_PATH): string
     {
         return $this->getGenerator()->generate($name, $parameters, $referenceType);
     }
@@ -174,13 +175,23 @@ class SlugRouter implements RequestMatcherInterface, VersatileGeneratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getRouteDebugMessage($name, array $parameters = array())
+    public function getRouteDebugMessage(string $name, array $parameters = []): string
     {
         return "Route '$name' not found";
     }
 
+    public function match(string $pathinfo): array
+    {
+        $match = $this->getMatcher()->match($pathinfo);
 
-    public function matchRequest(Request $request)
+        if (!$match) {
+            throw new ResourceNotFoundException($pathinfo);
+        }
+
+        return $this->handleRedirect($match);
+    }
+
+    public function matchRequest(Request $request): array
     {
         $matcher = $this->getMatcher();
         $match = $matcher->matchRequest($request);
@@ -189,6 +200,11 @@ class SlugRouter implements RequestMatcherInterface, VersatileGeneratorInterface
             throw new ResourceNotFoundException($request->getPathInfo());
         }
 
+        return $this->handleRedirect($match);
+    }
+
+    protected function handleRedirect($match): array
+    {
         if ($match['_controller'] === 'FrameworkBundle:Redirect:urlRedirect') {
             $routeName = $match['_route'];
             $controller = $match['_controller'];
@@ -198,7 +214,7 @@ class SlugRouter implements RequestMatcherInterface, VersatileGeneratorInterface
                 '_controller' => $controller,
                 '_route' => '',
                 'path' => $this->getGenerator()->generate($routeName, $match),
-                'params' => array(),
+                'params' => [],
                 'permanent' => true,
             ];
 

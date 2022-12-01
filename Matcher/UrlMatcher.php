@@ -54,7 +54,7 @@ class UrlMatcher extends BaseUrlMatcher
      * @throws ResourceNotFoundException If the resource could not be found
      * @throws MethodNotAllowedException If the resource was found but the request method is not allowed
      */
-    protected function matchCollection($pathinfo, RouteCollection $routes)
+    protected function matchCollection(string $pathinfo, RouteCollection $routes): array
     {
         foreach ($routes as $name => $route) {
             $compiledRoute = $route->compile();
@@ -144,6 +144,8 @@ class UrlMatcher extends BaseUrlMatcher
 
             return $attributes;
         }
+
+        return [];
     }
 
     private function getSlugService($attr, $route)

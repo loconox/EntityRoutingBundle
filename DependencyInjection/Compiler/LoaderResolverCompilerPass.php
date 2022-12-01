@@ -27,7 +27,7 @@ class LoaderResolverCompilerPass implements CompilerPassInterface
         $definition = $container->getDefinition('loconox_entity_routing.route.loader_resolver');
 
         foreach ($container->findTaggedServiceIds('loconox_entity_routing.loader') as $id => $attributes) {
-            $definition->addMethodCall('addLoader', array(new Reference($id)));
+            $definition->addMethodCall('addLoader', [new Reference($id)]);
         }
     }
 }

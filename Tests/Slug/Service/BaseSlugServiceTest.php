@@ -3,40 +3,54 @@
 namespace Loconox\EntityRoutingBundle\Tests\Slug\Service;
 
 use Loconox\EntityRoutingBundle\Entity\Slug;
+use Loconox\EntityRoutingBundle\Entity\SlugManager;
+use Loconox\EntityRoutingBundle\Slug\Service\BaseSlugService;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class BaseSlugServiceTest extends \PHPUnit_Framework_TestCase
+class BaseSlugServiceTest extends TestCase
 {
     public function testGetClass()
     {
-        $slugManager = $this->getMockBuilder('Loconox\EntityRoutingBundle\Entity\SlugManager')
-                            ->disableOriginalConstructor()
-                            ->getMock();
-        $service = $this->getMockBuilder('Loconox\EntityRoutingBundle\Slug\Service\BaseSlugService')
-                        ->setConstructorArgs(['FooClass', $slugManager])
-                        ->setMethods(['setValues'])
-                        ->getMockForAbstractClass();
+        $slugManager = $this->getMockBuilder(SlugManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $validator = $this->getMockBuilder(ValidatorInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $service = $this->getMockBuilder(BaseSlugService::class)
+            ->setConstructorArgs(['FooClass', $slugManager, $validator])
+            ->onlyMethods(['setValues'])
+            ->getMockForAbstractClass();
 
         $this->assertEquals('FooClass', $service->getClass());
     }
 
     public function testIncrementSlug()
     {
-        $slug    = new Slug();
+        $slug = new Slug();
         $newSlug = new Slug();
 
-        $slugManager = $this->getMockBuilder('Loconox\EntityRoutingBundle\Entity\SlugManager')
-                            ->disableOriginalConstructor()
-                            ->getMock();
+        $validator = $this->getMockBuilder(ValidatorInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $slugManager = $this->getMockBuilder(SlugManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $slugManager->expects($this->once())
-                    ->method('create')
-                    ->will($this->returnValue($newSlug));
-        $service = $this->getMockBuilder('Loconox\EntityRoutingBundle\Slug\Service\BaseSlugService')
-                        ->setConstructorArgs(['FooClass', $slugManager])
-                        ->setMethods(['setValues'])
-                        ->getMockForAbstractClass();
+            ->method('create')
+            ->will($this->returnValue($newSlug));
+
+        $service = $this->getMockBuilder(BaseSlugService::class)
+            ->setConstructorArgs(['FooClass', $slugManager, $validator])
+            ->onlyMethods(['setValues'])
+            ->getMockForAbstractClass();
         $service->expects($this->any())
-                ->method('setValues')
-                ->will($this->returnValue(true));
+            ->method('setValues')
+            ->will($this->returnValue(true));
 
         $entity = new \stdClass();
 
@@ -50,19 +64,24 @@ class BaseSlugServiceTest extends \PHPUnit_Framework_TestCase
     {
         $newSlug = new Slug();
 
-        $slugManager = $this->getMockBuilder('Loconox\EntityRoutingBundle\Entity\SlugManager')
-                            ->disableOriginalConstructor()
-                            ->getMock();
+        $validator = $this->getMockBuilder(ValidatorInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $slugManager = $this->getMockBuilder(SlugManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $slugManager->expects($this->once())
-                    ->method('create')
-                    ->will($this->returnValue($newSlug));
-        $service = $this->getMockBuilder('Loconox\EntityRoutingBundle\Slug\Service\BaseSlugService')
-                        ->setConstructorArgs(['FooClass', $slugManager])
-                        ->setMethods(['setValues'])
-                        ->getMockForAbstractClass();
+            ->method('create')
+            ->will($this->returnValue($newSlug));
+
+        $service = $this->getMockBuilder(BaseSlugService::class)
+            ->setConstructorArgs(['FooClass', $slugManager, $validator])
+            ->onlyMethods(['setValues'])
+            ->getMockForAbstractClass();
         $service->expects($this->any())
-                ->method('setValues')
-                ->will($this->returnValue(true));
+            ->method('setValues')
+            ->will($this->returnValue(true));
 
         $entity = new \stdClass();
 
@@ -73,22 +92,27 @@ class BaseSlugServiceTest extends \PHPUnit_Framework_TestCase
     {
         $newSlug = new Slug();
 
-        $slugManager = $this->getMockBuilder('Loconox\EntityRoutingBundle\Entity\SlugManager')
-                            ->disableOriginalConstructor()
-                            ->getMock();
+        $validator = $this->getMockBuilder(ValidatorInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $slugManager = $this->getMockBuilder(SlugManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $slugManager->expects($this->once())
-                    ->method('create')
-                    ->will($this->returnValue($newSlug));
+            ->method('create')
+            ->will($this->returnValue($newSlug));
         $slugManager->expects($this->once())
-                    ->method('save')
-                    ->with($this->equalTo($newSlug));
-        $service = $this->getMockBuilder('Loconox\EntityRoutingBundle\Slug\Service\BaseSlugService')
-                        ->setConstructorArgs(['FooClass', $slugManager])
-                        ->setMethods(['setValues'])
-                        ->getMockForAbstractClass();
+            ->method('save')
+            ->with($this->equalTo($newSlug));
+
+        $service = $this->getMockBuilder(BaseSlugService::class)
+            ->setConstructorArgs(['FooClass', $slugManager, $validator])
+            ->onlyMethods(['setValues'])
+            ->getMockForAbstractClass();
         $service->expects($this->any())
-                ->method('setValues')
-                ->will($this->returnValue(true));
+            ->method('setValues')
+            ->will($this->returnValue(true));
 
         $entity = new \stdClass();
 
@@ -97,58 +121,67 @@ class BaseSlugServiceTest extends \PHPUnit_Framework_TestCase
 
     public function testUpdateSlug()
     {
-        $slug   = new Slug();
+        $slug = new Slug();
         $entity = new \stdClass();
 
-        $slugManager = $this->getMockBuilder('Loconox\EntityRoutingBundle\Entity\SlugManager')
-                            ->disableOriginalConstructor()
-                            ->getMock();
+        $validator = $this->getMockBuilder(ValidatorInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $slugManager = $this->getMockBuilder(SlugManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $slugManager->expects($this->once())
-                    ->method('save')
-                    ->with($this->equalTo($slug));
-        $service = $this->getMockBuilder('Loconox\EntityRoutingBundle\Slug\Service\BaseSlugService')
-                        ->setConstructorArgs(['FooClass', $slugManager])
-                        ->setMethods(['setValues', 'findSlug', 'hasChanged'])
-                        ->getMockForAbstractClass();
+            ->method('save')
+            ->with($this->equalTo($slug));
+
+        $service = $this->getMockBuilder(BaseSlugService::class)
+            ->setConstructorArgs(['FooClass', $slugManager, $validator])
+            ->onlyMethods(['setValues', 'findSlug', 'hasChanged'])
+            ->getMockForAbstractClass();
         $service->expects($this->any())
-                ->method('setValues')
-                ->with($this->equalTo($slug), $this->equalTo($entity))
-                ->will($this->returnValue(true));
+            ->method('setValues')
+            ->with($this->equalTo($slug), $this->equalTo($entity))
+            ->will($this->returnValue(true));
         $service->expects($this->any())
-                ->method('findSlug')
-                ->with($this->equalTo($entity))
-                ->will($this->returnValue($slug));
+            ->method('findSlug')
+            ->with($this->equalTo($entity))
+            ->will($this->returnValue($slug));
         $service->expects($this->any())
-                ->method('hasChanged')
-                ->will($this->returnValue(false));
+            ->method('hasChanged')
+            ->will($this->returnValue(false));
 
         $service->updateSlug($entity);
     }
 
     public function testUpdateSlugChangedValue()
     {
-        $slug   = new Slug();
+        $slug = new Slug();
         $entity = new \stdClass();
 
-        $slugManager = $this->getMockBuilder('Loconox\EntityRoutingBundle\Entity\SlugManager')
-                            ->disableOriginalConstructor()
-                            ->getMock();
+        $slugManager = $this->getMockBuilder(SlugManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $service = $this->getMockBuilder('Loconox\EntityRoutingBundle\Slug\Service\BaseSlugService')
-                        ->setConstructorArgs(['FooClass', $slugManager])
-                        ->setMethods(['incrementSlug', 'findSlug', 'hasChanged'])
-                        ->getMockForAbstractClass();
+        $validator = $this->getMockBuilder(ValidatorInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $service = $this->getMockBuilder(BaseSlugService::class)
+            ->setConstructorArgs(['FooClass', $slugManager, $validator])
+            ->onlyMethods(['incrementSlug', 'findSlug', 'hasChanged'])
+            ->getMockForAbstractClass();
         $service->expects($this->once())
-                ->method('incrementSlug')
-                ->with($this->equalTo($entity), $this->equalTo($slug))
-                ->will($this->returnValue($slug));
+            ->method('incrementSlug')
+            ->with($this->equalTo($entity), $this->equalTo($slug))
+            ->will($this->returnValue($slug));
         $service->expects($this->any())
-                ->method('findSlug')
-                ->with($this->equalTo($entity))
-                ->will($this->returnValue($slug));
+            ->method('findSlug')
+            ->with($this->equalTo($entity))
+            ->will($this->returnValue($slug));
         $service->expects($this->any())
-                ->method('hasChanged')
-                ->will($this->returnValue(true));
+            ->method('hasChanged')
+            ->will($this->returnValue(true));
 
         $service->updateSlug($entity);
     }
@@ -158,11 +191,11 @@ class BaseSlugServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function testSlugify($string, $expected)
     {
-        $service = $this->getMockBuilder('Loconox\EntityRoutingBundle\Slug\Service\BaseSlugService')
-                        ->disableOriginalConstructor()
-                        ->getMockForAbstractClass();
+        $service = $this->getMockBuilder(BaseSlugService::class)
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
 
-        $method = new \ReflectionMethod('Loconox\EntityRoutingBundle\Slug\Service\BaseSlugService', 'slugify');
+        $method = new \ReflectionMethod(BaseSlugService::class, 'slugify');
         $method->setAccessible(true);
 
         $this->assertEquals($expected, $method->invoke($service, $string));

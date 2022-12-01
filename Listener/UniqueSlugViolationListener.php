@@ -27,8 +27,11 @@ class UniqueSlugViolationListener implements EventSubscriberInterface
         $this->slugServiceManager = $slugServiceManager;
     }
 
-
-    public function uniqueSlugViolation(SlugEvent $event)
+    /**
+     * @param SlugEvent $event
+     * @return void
+     */
+    public function uniqueSlugViolation(SlugEvent $event): void
     {
         $entity = $event->getEntity();
 
@@ -42,9 +45,10 @@ class UniqueSlugViolationListener implements EventSubscriberInterface
 
         $slugs = $this->slugManager->findSlugLike($slugViolation);
 
+        // add an integer at the end of the slug
         $i = 1;
         foreach($slugs as $slug) {
-            // Si c'est le slug de l'entity déjà présent en base continuer
+            // if it's the slug already present in bdd, continue
             if ($slug->getEntityId() == $slugViolation->getEntityId()) {
                 continue;
             }
@@ -56,6 +60,10 @@ class UniqueSlugViolationListener implements EventSubscriberInterface
         }
         $slugViolation->setSlug($slugViolation->getSlug().'-'.$i);
         $service->setEntitySlug($slugViolation, $entity);
+
+        $service->saveSlug($slugViolation);
+
+        $event->setSlug($slugViolation);
     }
 
     public static function getSubscribedEvents()

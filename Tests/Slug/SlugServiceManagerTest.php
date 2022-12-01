@@ -2,13 +2,15 @@
 
 namespace Loconox\EntityRoutingBundle\Tests\Slug;
 
+use Loconox\EntityRoutingBundle\Slug\Service\SlugServiceInterface;
 use Loconox\EntityRoutingBundle\Slug\SlugServiceManager;
+use PHPUnit\Framework\TestCase;
 
-class SlugServiceManagerTest extends \PHPUnit_Framework_TestCase
+class SlugServiceManagerTest extends TestCase
 {
     public function testAdd()
     {
-        $fooService = $this->getMockBuilder('Loconox\EntityRoutingBundle\Slug\Service\SlugServiceInterface')->getMock();
+        $fooService = $this->getMockBuilder(SlugServiceInterface::class)->getMock();
         $manager = new SlugServiceManager();
 
         $this->assertCount(0, $manager->getAll());
@@ -18,7 +20,7 @@ class SlugServiceManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testGet()
     {
-        $fooService = $this->getMockBuilder('Loconox\EntityRoutingBundle\Slug\Service\SlugServiceInterface')->getMock();
+        $fooService = $this->getMockBuilder(SlugServiceInterface::class)->getMock();
         $fooService->expects($this->once())
             ->method('getClass')
             ->will($this->returnValue(get_class(new FooClass())));
@@ -39,7 +41,7 @@ class SlugServiceManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testGetArrayClass()
     {
-        $foobarService = $this->getMockBuilder('Loconox\EntityRoutingBundle\Slug\Service\SlugServiceInterface')->getMock();
+        $foobarService = $this->getMockBuilder(SlugServiceInterface::class)->getMock();
         $foobarService->expects($this->once())
             ->method('getClass')
             ->will($this->returnValue([get_class(new TotoClass()), get_class(new BarClass())]));
@@ -52,7 +54,7 @@ class SlugServiceManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testGetClassWithServiceArrayClass()
     {
-        $foobarService = $this->getMockBuilder('Loconox\EntityRoutingBundle\Slug\Service\SlugServiceInterface')->getMock();
+        $foobarService = $this->getMockBuilder(SlugServiceInterface::class)->getMock();
         $foobarService->expects($this->once())
             ->method('getClass')
             ->will($this->returnValue([get_class(new TotoClass()), get_class(new FooClass())]));
@@ -64,7 +66,7 @@ class SlugServiceManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testGetArrayClassWithServiceClass()
     {
-        $foobarService = $this->getMockBuilder('Loconox\EntityRoutingBundle\Slug\Service\SlugServiceInterface')->getMock();
+        $foobarService = $this->getMockBuilder(SlugServiceInterface::class)->getMock();
         $foobarService->expects($this->once())
             ->method('getClass')
             ->will($this->returnValue(get_class(new FooClass())));
@@ -76,7 +78,7 @@ class SlugServiceManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testGetArrayClassWrongOrder()
     {
-        $foobarService = $this->getMockBuilder('Loconox\EntityRoutingBundle\Slug\Service\SlugServiceInterface')->getMock();
+        $foobarService = $this->getMockBuilder(SlugServiceInterface::class)->getMock();
         $foobarService->expects($this->once())
             ->method('getClass')
             ->will($this->returnValue([get_class(new BarClass()), get_class(new TotoClass())]));

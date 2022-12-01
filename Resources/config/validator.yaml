@@ -1,6 +1,6 @@
 services:
-    loconox_entity_routing.validator.unique_slug:
-        class: Loconox\EntityRoutingBundle\Validator\Constraints\UniqueSlugValidator
-        arguments: [ "@loconox_entity_routing.slug.service.manager", "@loconox_entity_routing.manager.slug" ]
-        tags:
-            - { name: validator.constraint_validator, alias: loconox_entity_routing.validator.unique_slug }
+  loconox_entity_routing.validator.unique_slug:
+    class: Loconox\EntityRoutingBundle\Validator\Constraints\UniqueSlugValidator
+    arguments: [ '@Loconox\EntityRoutingBundle\Slug\SlugServiceManager', "@loconox_entity_routing.manager.slug" ]
+    tags:
+      - { name: validator.constraint_validator, alias: loconox_entity_routing.validator.unique_slug }

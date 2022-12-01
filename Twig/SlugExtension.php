@@ -5,14 +5,12 @@ namespace Loconox\EntityRoutingBundle\Twig;
 
 use Loconox\EntityRoutingBundle\Slug\SlugServiceManager;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
-class SlugExtension extends \Twig_Extension
+class SlugExtension extends AbstractExtension
 {
-
-    /**
-     * @var SlugServiceManager
-     */
-    protected $slugServiceManager;
+    protected SlugServiceManager $slugServiceManager;
 
     function __construct(SlugServiceManager $slugServiceManager)
     {
@@ -46,17 +44,7 @@ class SlugExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('slug', array($this, 'getSlug')),
+            new TwigFunction('slug', array($this, 'getSlug')),
         ];
-    }
-
-    /**
-     * Returns the name of the extension.
-     *
-     * @return string The extension name
-     */
-    public function getName()
-    {
-        return 'loconox_entity_routing_slug';
     }
 }
