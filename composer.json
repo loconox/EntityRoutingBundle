@@ -28,6 +28,9 @@
         "phpunit/phpunit": "^9.5"
     },
     "autoload": {
-        "psr-4": {"Loconox\\EntityRoutingBundle\\": ""}
+        "psr-4": {"Loconox\\EntityRoutingBundle\\": "src/"}
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
     }
 }

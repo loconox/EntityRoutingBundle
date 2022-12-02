@@ -3,8 +3,8 @@
 namespace Loconox\EntityRoutingBundle\Listener;
 
 use Loconox\EntityRoutingBundle\Event\SlugEvent;
-use Loconox\EntityRoutingBundle\Events;
 use Loconox\EntityRoutingBundle\Slug\SlugServiceManagerInterface;
+use Loconox\EntityRoutingBundle\Events;
 use Loconox\EntityRoutingBundle\Validator\Constraints\UniqueSlug;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

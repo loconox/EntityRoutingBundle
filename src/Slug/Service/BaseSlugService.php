@@ -6,10 +6,7 @@ namespace Loconox\EntityRoutingBundle\Slug\Service;
 use Loconox\EntityRoutingBundle\Entity\SlugManager;
 use Loconox\EntityRoutingBundle\Model\SlugInterface;
 use Loconox\EntityRoutingBundle\Validator\Constraints\UniqueSlug;
-use Loconox\EntityRoutingBundle\Validator\Constraints\UniqueSlugValidator;
-use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 abstract class BaseSlugService implements SlugServiceInterface

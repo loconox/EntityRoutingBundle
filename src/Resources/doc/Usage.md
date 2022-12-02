@@ -209,14 +209,7 @@ Or by using the `Events::ACTION_CREATE_SLUG` event. This way, it automatically h
 
 namespace App\Controller;
 
-use App\Entity\Product;
-use Doctrine\Persistence\ManagerRegistry;
-use Loconox\EntityRoutingBundle\Event\SlugEvent;
-use Loconox\EntityRoutingBundle\Events;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Product;use Doctrine\Persistence\ManagerRegistry;use Loconox\EntityRoutingBundle\Event\SlugEvent;use Loconox\EntityRoutingBundle\Events;use Psr\EventDispatcher\EventDispatcherInterface;use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;use Symfony\Component\Routing\Annotation\Route;
 
 class ProductController extends AbstractController
 {

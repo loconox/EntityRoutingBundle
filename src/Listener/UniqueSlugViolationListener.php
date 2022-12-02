@@ -3,10 +3,10 @@
 namespace Loconox\EntityRoutingBundle\Listener;
 
 use Loconox\EntityRoutingBundle\Event\SlugEvent;
-use Loconox\EntityRoutingBundle\Events;
 use Loconox\EntityRoutingBundle\Exception\SlugServiceNotFoundException;
 use Loconox\EntityRoutingBundle\Model\SlugManagerInterface;
 use Loconox\EntityRoutingBundle\Slug\SlugServiceManagerInterface;
+use Loconox\EntityRoutingBundle\Events;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class UniqueSlugViolationListener implements EventSubscriberInterface

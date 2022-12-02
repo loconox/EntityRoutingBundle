@@ -56,7 +56,7 @@ in the `config/bundles.php` file of your project:
 
 return [
     // ...
-    Loconox\EntityRoutingBundle\LoconoxEntityRoutingBundle::class => ['all' => true]
+    \Loconox\EntityRoutingBundle\LoconoxEntityRoutingBundle::class => ['all' => true]
 ];
 ```
 

@@ -2,8 +2,8 @@
 
 namespace Loconox\EntityRoutingBundle\Tests\Validator\Constraints;
 
-use Loconox\EntityRoutingBundle\Validator\Constraints\UniqueSlug;
 use Loconox\EntityRoutingBundle\Entity\Slug;
+use Loconox\EntityRoutingBundle\Validator\Constraints\UniqueSlug;
 use Loconox\EntityRoutingBundle\Validator\Constraints\UniqueSlugValidator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
