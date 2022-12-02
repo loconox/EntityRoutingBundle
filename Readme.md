@@ -1,7 +1,7 @@
 LoconoxEntityRoutingBundle
 ==========================
 
-[![Build Status](https://travis-ci.org/loconox/EntityRoutingBundle.svg?branch=master)](https://travis-ci.org/loconox/EntityRoutingBundle)
+![PHPUnit tests](https://github.com/loconox/EntityRoutingBundle/actions/workflows/php.yml/badge.svg)
 
 Topos
 -----
